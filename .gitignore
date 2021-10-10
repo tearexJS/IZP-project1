@@ -1,3 +1,4 @@
 pwcheck
+.gdb_history
 pwcheck.o
 *.txt
