@@ -27,6 +27,20 @@ int strToInt(char *str)
     return -1;
 }
 
+
+
+// finding out if a string contains a character
+int strToInt(char *str)
+{
+    char *endptr;
+    int retval = strtol(str, &endptr, 10);
+    if(endptr != NULL)
+    {
+        return 0;
+    }
+    return retval;
+}
+
 // calculating the length of the password
 int length(char *str)
 { 
@@ -139,6 +153,64 @@ int lvl2 (char *psswd, int param)
     }
     return 0;
 }
+{
+    int len = length(str);
+
+    for(int i = 0; i<len; i++)
+    {
+        if(str[i] == c)
+            return true;
+    }
+    return false;
+}
+// comparing 2 strings if they are indetical
+bool cmpStr(char *str1, char *str2)
+{
+    int str1Len = length(str1);
+    int str2Len = length(str2);
+
+    if(str1Len == str2Len)
+    {
+        for(int i = 0; i<str1Len; i++)
+        {
+            if(str1[i]!=str2[i])
+            {
+                return false;
+            }
+        }
+        return true;
+    }
+    return false;
+}
+void clean(char *str)
+{
+    for(int i = 0; str[i]!='\0'; i++)
+    {
+        str[i] = '\0';
+    }
+}
+int lvl1 (char *psswd)
+{
+    int len = length(psswd);
+    bool upperCase = false;
+    bool lowerCase = false;
+
+    for(int i = 0; i<len; i++)
+    {
+        if(psswd[i] >= 'A' && psswd[i]<='Z')
+        {
+            upperCase = true;
+        }
+        else if(psswd[i] >='a' && psswd[i]<='z')
+        {
+            lowerCase = true;
+        }
+        if(upperCase && lowerCase)
+            return 1;
+    }
+    return 0;
+}
+
 int commands(int argc, char **argv, char *psswd)
 {
     if(argc >= 2)
@@ -165,11 +237,18 @@ int commands(int argc, char **argv, char *psswd)
         {
             return lvl1(psswd);
         }
+
         else if(cmpStr(argv[1], "2"))
         {
             return lvl2(psswd, strToInt(argv[2]));
         }
         /*else if(cmpStr(argv[1], "3"))
+
+        /*else if(cmpStr(argv[1], "2"))
+        {
+
+        }
+        else if(cmpStr(argv[1], "3"))
         {
 
         }
