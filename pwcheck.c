@@ -3,17 +3,28 @@
 #include <stdbool.h>
 
 #define LENGTH 102
+#define INVALIG_ARGUMENT 2
+#define NOT_ENOUGH_ARGS 3
+
+#define ERROR(msg, errCode)\
+{                       \
+    do                  \
+    {                   \
+       fprintf(stderr, msg); \
+       return errCode;     \
+    }while (0);          \
+}                     
 
 // finding out if a string contains a character
 int strToInt(char *str)
 {
     char *endptr;
-    int retval = strtol(str, &endptr, 10);
+    int num = strtol(str, &endptr, 10);
     if(endptr != NULL)
     {
-        return 0;
+        return num;
     }
-    return retval;
+    return -1;
 }
 
 // calculating the length of the password
@@ -85,7 +96,49 @@ int lvl1 (char *psswd)
     }
     return 0;
 }
+int ruleSum(bool *rules)
+{
+    int sum = 0;
+    for(int i = 0; i<4; i++)
+    {
+        sum += rules[i];
+    }
+    return sum;
+}
+int lvl2 (char *psswd, int param)
+{
+    bool rules[4] = {false};
 
+    int len = length(psswd);
+
+    if(lvl1(psswd))
+    {
+        if(param>=1 && param<=4)
+        {
+            for(int i = 0; i<len; i++)
+            {
+                if(psswd[i]>='A'&& psswd[i]<='Z')
+                    rules[0] = true;
+
+                else if(psswd[i] >= 'a' && psswd[i] <= 'z')
+                    rules[1] = true;
+
+                else if(psswd[i]>=0 && psswd[i]<=9)
+                    rules[2] = true;
+
+                else if((psswd[i]>=32 && psswd[i]<=64) || (psswd[i]>=91 && psswd[i]<=96) || (psswd[i]>= 123 && psswd[i]<=126))
+                    rules[3] = true;
+            }
+            return ruleSum(rules) >= param?1:0;
+        }
+        else
+        {
+            //char  errMsg[] = "The argument is invalid";
+            ERROR("errMsg", INVALIG_ARGUMENT);
+        }
+    }
+    return 0;
+}
 int commands(int argc, char **argv, char *psswd)
 {
     if(argc >= 2)
@@ -112,11 +165,11 @@ int commands(int argc, char **argv, char *psswd)
         {
             return lvl1(psswd);
         }
-        /*else if(cmpStr(argv[1], "2"))
+        else if(cmpStr(argv[1], "2"))
         {
-
+            return lvl2(psswd, strToInt(argv[2]));
         }
-        else if(cmpStr(argv[1], "3"))
+        /*else if(cmpStr(argv[1], "3"))
         {
 
         }
@@ -141,5 +194,5 @@ int main(int argc, char **argv)
         }
         clean(psswd);
     }
-
+    return 0;
 }
