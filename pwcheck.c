@@ -28,19 +28,6 @@ int strToInt(char *str)
 }
 
 
-
-// finding out if a string contains a character
-int strToInt(char *str)
-{
-    char *endptr;
-    int retval = strtol(str, &endptr, 10);
-    if(endptr != NULL)
-    {
-        return 0;
-    }
-    return retval;
-}
-
 // calculating the length of the password
 int length(char *str)
 { 
@@ -82,13 +69,7 @@ bool cmpStr(char *str1, char *str2)
     }
     return false;
 }
-void clean(char *str)
-{
-    for(int i = 0; str[i]!='\0'; i++)
-    {
-        str[i] = '\0';
-    }
-}
+
 int lvl1 (char *psswd)
 {
     int len = length(psswd);
@@ -137,10 +118,10 @@ int lvl2 (char *psswd, int param)
                 else if(psswd[i] >= 'a' && psswd[i] <= 'z')
                     rules[1] = true;
 
-                else if(psswd[i]>=0 && psswd[i]<=9)
+                else if(psswd[i]>= '0' && psswd[i]<='9')
                     rules[2] = true;
 
-                else if((psswd[i]>=32 && psswd[i]<=64) || (psswd[i]>=91 && psswd[i]<=96) || (psswd[i]>= 123 && psswd[i]<=126))
+                else if((psswd[i]>=32 && psswd[i]<=47) || (psswd[i]>=58 && psswd[i]<=64) || (psswd[i]>= 91 && psswd[i]<=96) || (psswd[i]>=123 && psswd[i]<=126))
                     rules[3] = true;
             }
             return ruleSum(rules) >= param?1:0;
@@ -153,62 +134,34 @@ int lvl2 (char *psswd, int param)
     }
     return 0;
 }
-{
-    int len = length(str);
 
-    for(int i = 0; i<len; i++)
-    {
-        if(str[i] == c)
-            return true;
-    }
-    return false;
-}
-// comparing 2 strings if they are indetical
-bool cmpStr(char *str1, char *str2)
+int lvl3(char *psswd, int param)
 {
-    int str1Len = length(str1);
-    int str2Len = length(str2);
-
-    if(str1Len == str2Len)
+    if(lvl2(psswd, param) == 1)
     {
-        for(int i = 0; i<str1Len; i++)
+        int len = length(psswd);
+        int counter = 0;
+        for(int i = 0; i<len; i++)
         {
-            if(str1[i]!=str2[i])
+            if(contains(psswd, psswd[i]))
             {
-                return false;
+                counter++;
+            }
+            if(counter == param)
+            {
+                return 1;
             }
         }
-        return true;
     }
-    return false;
+    return 0;
 }
+
 void clean(char *str)
 {
     for(int i = 0; str[i]!='\0'; i++)
     {
         str[i] = '\0';
     }
-}
-int lvl1 (char *psswd)
-{
-    int len = length(psswd);
-    bool upperCase = false;
-    bool lowerCase = false;
-
-    for(int i = 0; i<len; i++)
-    {
-        if(psswd[i] >= 'A' && psswd[i]<='Z')
-        {
-            upperCase = true;
-        }
-        else if(psswd[i] >='a' && psswd[i]<='z')
-        {
-            lowerCase = true;
-        }
-        if(upperCase && lowerCase)
-            return 1;
-    }
-    return 0;
 }
 
 int commands(int argc, char **argv, char *psswd)
@@ -242,17 +195,13 @@ int commands(int argc, char **argv, char *psswd)
         {
             return lvl2(psswd, strToInt(argv[2]));
         }
-        /*else if(cmpStr(argv[1], "3"))
 
-        /*else if(cmpStr(argv[1], "2"))
-        {
 
-        }
         else if(cmpStr(argv[1], "3"))
         {
-
+            return lvl3(psswd, strToInt(argv[2]));
         }
-        else if(cmpStr(argv[1], "4"))
+        /*else if(cmpStr(argv[1], "4"))
         {
 
         }*/
