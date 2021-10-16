@@ -185,6 +185,7 @@ int lvl4(char *psswd, int param)
         for (int i = 0; i < len; i++)
         {
             strNcpy((psswd + i), tmp1,param); 
+            
             for (int j = i; j < (len-param); j++)
             {
 
