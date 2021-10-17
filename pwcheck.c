@@ -4,10 +4,13 @@
 #include <limits.h>
 
 #define LENGTH 102
+#define NUMBER_OF_POSSIBLE_CHARS 95
+
 #define INVALIG_ARGUMENT 2
 #define NOT_ENOUGH_ARGS 3
 #define TOO_MANY_ARGS 4
-#define NUMBER_OF_POSSIBLE_CHARS 95
+#define TOO_MANY_CHARS 5
+
 #define ERROR(msg, errCode)       \
     {                             \
         do                        \
@@ -18,6 +21,17 @@
     }
 
 // finding out if a string contains a character
+bool isTooLong(char *psswd)
+{
+    for (int i = 0; psswd[i] != '\n'; i++)
+    {
+        if (i >= 100)
+        {
+            return true;
+        }
+    }
+    return false;
+}
 bool isNum(char *str)
 {
     for (int i = 0; str[i] != '\0'; i++)
@@ -152,19 +166,19 @@ int lvl1(char *psswd)
     bool upperCase = false;
     bool lowerCase = false;
 
-        for (int i = 0; i < len; i++)
+    for (int i = 0; i < len; i++)
+    {
+        if (psswd[i] >= 'A' && psswd[i] <= 'Z')
         {
-            if (psswd[i] >= 'A' && psswd[i] <= 'Z')
-            {
-                upperCase = true;
-            }
-            else if (psswd[i] >= 'a' && psswd[i] <= 'z')
-            {
-                lowerCase = true;
-            }
-            if (upperCase && lowerCase)
-                return 1;
+            upperCase = true;
         }
+        else if (psswd[i] >= 'a' && psswd[i] <= 'z')
+        {
+            lowerCase = true;
+        }
+        if (upperCase && lowerCase)
+            return 1;
+    }
     return 0;
 }
 int ruleSum(bool *rules)
@@ -237,10 +251,9 @@ int lvl4(char *psswd, int param)
         {
             strNcpy((psswd + i), tmp1, param);
 
-            for (int j = i; j < (len - param); j++)
+            for (int j = i + 1; j < (len - param); j++)
             {
-
-                strNcpy((psswd + j + param), tmp2, param);
+                strNcpy((psswd + j), tmp2, param);
                 if (cmpStr(tmp1, tmp2))
                     return 0;
                 clean(tmp2);
@@ -264,27 +277,37 @@ void charCounter(char *psswd, int *charCount)
 int parseArgument(int argc, int *level, int *param, char **argv, bool *statsFlag)
 {
 
-    if (containsChar(argv[1], '-'))
+    if (argc > 1 && containsChar(argv[1], '-'))
     {
-        for (int i = 0; i < argc; i++)
+        for (int i = 1; i < argc; i++)
         {
             if (cmpStr(argv[i], "-l"))
             {
                 if ((i + 1) < argc && isNum(argv[i + 1]))
+                {
                     *level = strToInt(argv[i + 1]);
+                    i++;
+                }
                 else
                     ERROR("Invalid argument", INVALIG_ARGUMENT);
             }
             else if (cmpStr(argv[i], "-p"))
             {
                 if ((i + 1) < argc && isNum(argv[i + 1]))
+                {
                     *param = strToInt(argv[i + 1]);
+                    i++;
+                }
                 else
                     ERROR("Invalid argument", INVALIG_ARGUMENT);
             }
             else if (cmpStr(argv[i], "--stats"))
             {
                 *statsFlag = true;
+            }
+            else if (!isNum(argv[i]))
+            {
+                ERROR("Invalid argument", INVALIG_ARGUMENT);
             }
         }
         return 1;
@@ -295,17 +318,29 @@ int parseArgument(int argc, int *level, int *param, char **argv, bool *statsFlag
     if (argc >= 3 && argc <= 4)
     {
         if (isNum(argv[1]))
+        {
             *level = strToInt(argv[1]);
+        }
         else
+        {
             ERROR("Invalid argument", INVALIG_ARGUMENT);
+        }
         if (isNum(argv[2]))
+        {
             *param = strToInt(argv[2]);
+        }
         else
+        {
             ERROR("Invalid argument", INVALIG_ARGUMENT);
+        }
         if (argc == 4 && cmpStr(argv[3], "--stats"))
+        {
             *statsFlag = true;
-        else if(argc == 4 && !cmpStr(argv[3], "--stats"))
+        }
+        else if (argc == 4 && !cmpStr(argv[3], "--stats"))
+        {
             ERROR("Invalid argument", INVALIG_ARGUMENT);
+        }
         return 1;
     }
     else if (argc > 4)
@@ -366,18 +401,26 @@ int main(int argc, char **argv)
 
     bool statsFlag = false;
     int numberOfPasswords = 0;
-    int minLength = INT_MAX;
+    int minLength = LENGTH;
 
     while (fgets(psswd, LENGTH, stdin))
     {
         numberOfPasswords++;
-        int printPass = commands(argc, argv, psswd, &statsFlag, charCount, &minLength);
-        if (printPass == 1)
+        if(isTooLong(psswd))
+        {
+            ERROR("The input is too long", TOO_MANY_CHARS);
+        }
+        
+        int printPassword = commands(argc, argv, psswd, &statsFlag, charCount, &minLength);
+
+        if (printPassword == 1)
         {
             printf("%s", psswd);
         }
-        else if (printPass > 1)
+        else if (printPassword > 1)
+        {
             return commands(argc, argv, psswd, &statsFlag, charCount, &minLength);
+        }
         clean(psswd);
     }
     if (statsFlag)
