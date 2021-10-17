@@ -111,6 +111,7 @@ void strNcpy(char *src, char *dest, int len)
 int length(char *str)
 {
     int i = 0;
+
     while (str[i] != '\0')
     {
         i++;
@@ -120,7 +121,6 @@ int length(char *str)
 void shortestStr(char *psswd, int *minLength)
 {
     int len = containsChar(psswd, '\n') ? length(psswd) - 1 : length(psswd);
-
     if (*minLength > len)
     {
         *minLength = len;
@@ -193,7 +193,6 @@ int ruleSum(bool *rules)
 int lvl2(char *psswd, int param)
 {
     bool rules[4] = {false};
-
     int len = length(psswd);
 
     if (lvl1(psswd))
@@ -270,6 +269,7 @@ void charCounter(char *psswd, int *charCount)
 
     for (int i = 0; i < len; i++)
     {
+
         charCount[psswd[i] - 32]++;
     }
 }
@@ -429,5 +429,6 @@ int main(int argc, char **argv)
         printf("Minimalni delka: %d\n", minLength);
         printf("Prumerna delka: %.1f", (charSum(charCount) / numberOfPasswords));
     }
+
     return 0;
 }
