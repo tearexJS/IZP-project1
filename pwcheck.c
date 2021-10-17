@@ -1,9 +1,8 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <stdbool.h>
-#include <limits.h>
 
-#define LENGTH 102
+#define MAX_STRING_LENGTH 102
 #define NUMBER_OF_POSSIBLE_CHARS 95
 
 #define INVALIG_ARGUMENT 2
@@ -239,8 +238,8 @@ int lvl3(char *psswd, int param)
 int lvl4(char *psswd, int param)
 {
     int len = length(psswd);
-    char tmp1[LENGTH];
-    char tmp2[LENGTH];
+    char tmp1[MAX_STRING_LENGTH];
+    char tmp2[MAX_STRING_LENGTH];
 
     if (lvl3(psswd, param))
     {
@@ -396,21 +395,21 @@ int commands(int argc, char **argv, char *psswd, bool *statsFlag, int *charCount
 
 int main(int argc, char **argv)
 {
-    char psswd[LENGTH];
+    char psswd[MAX_STRING_LENGTH];
     int charCount[NUMBER_OF_POSSIBLE_CHARS] = {0};
 
     bool statsFlag = false;
     int numberOfPasswords = 0;
-    int minLength = LENGTH;
+    int minLength = MAX_STRING_LENGTH;
 
-    while (fgets(psswd, LENGTH, stdin))
+    while (fgets(psswd, MAX_STRING_LENGTH, stdin))
     {
         numberOfPasswords++;
         if(isTooLong(psswd))
         {
             ERROR("The input is too long", TOO_MANY_CHARS);
         }
-        
+
         int printPassword = commands(argc, argv, psswd, &statsFlag, charCount, &minLength);
 
         if (printPassword == 1)
