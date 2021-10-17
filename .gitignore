@@ -1,4 +1,6 @@
-pwcheck
 .gdb_history
+pwcheck
 pwcheck.o
 *.txt
+*.py
+
