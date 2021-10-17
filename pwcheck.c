@@ -45,7 +45,7 @@ bool containsChar(char *str, char c)
     }
     return false;
 }
-float charSum(char *charCount)
+float charSum(int *charCount)
 {
     float sum = 0;
 
@@ -56,7 +56,7 @@ float charSum(char *charCount)
     }
     return sum;
 }
-int uniqueCount(char *charCount)
+int uniqueCount(int *charCount)
 {
     int uniqueCounter = 0;
     for (int i = 0; i < NUMBER_OF_POSSIBLE_CHARS; i++)
@@ -152,19 +152,19 @@ int lvl1(char *psswd)
     bool upperCase = false;
     bool lowerCase = false;
 
-    for (int i = 0; i < len; i++)
-    {
-        if (psswd[i] >= 'A' && psswd[i] <= 'Z')
+        for (int i = 0; i < len; i++)
         {
-            upperCase = true;
+            if (psswd[i] >= 'A' && psswd[i] <= 'Z')
+            {
+                upperCase = true;
+            }
+            else if (psswd[i] >= 'a' && psswd[i] <= 'z')
+            {
+                lowerCase = true;
+            }
+            if (upperCase && lowerCase)
+                return 1;
         }
-        else if (psswd[i] >= 'a' && psswd[i] <= 'z')
-        {
-            lowerCase = true;
-        }
-        if (upperCase && lowerCase)
-            return 1;
-    }
     return 0;
 }
 int ruleSum(bool *rules)
@@ -185,21 +185,21 @@ int lvl2(char *psswd, int param)
 
     if (lvl1(psswd))
     {
-            for (int i = 0; i < len; i++)
-            {
-                if (psswd[i] >= 'A' && psswd[i] <= 'Z')
-                    rules[0] = true;
+        for (int i = 0; i < len; i++)
+        {
+            if (psswd[i] >= 'A' && psswd[i] <= 'Z')
+                rules[0] = true;
 
-                else if (psswd[i] >= 'a' && psswd[i] <= 'z')
-                    rules[1] = true;
+            else if (psswd[i] >= 'a' && psswd[i] <= 'z')
+                rules[1] = true;
 
-                else if (psswd[i] >= '0' && psswd[i] <= '9')
-                    rules[2] = true;
+            else if (psswd[i] >= '0' && psswd[i] <= '9')
+                rules[2] = true;
 
-                else if ((psswd[i] >= 32 && psswd[i] <= 47) || (psswd[i] >= 58 && psswd[i] <= 64) || (psswd[i] >= 91 && psswd[i] <= 96) || (psswd[i] >= 123 && psswd[i] <= 126))
-                    rules[3] = true;
-            }
-            return ruleSum(rules) >= param ? 1 : 0;
+            else if ((psswd[i] >= 32 && psswd[i] <= 47) || (psswd[i] >= 58 && psswd[i] <= 64) || (psswd[i] >= 91 && psswd[i] <= 96) || (psswd[i] >= 123 && psswd[i] <= 126))
+                rules[3] = true;
+        }
+        return ruleSum(rules) >= param ? 1 : 0;
     }
     return 0;
 }
@@ -252,7 +252,7 @@ int lvl4(char *psswd, int param)
     return 0;
 }
 
-void charCounter(char *psswd, char *charCount)
+void charCounter(char *psswd, int *charCount)
 {
     int len = containsChar(psswd, '\n') ? length(psswd) - 1 : length(psswd);
 
@@ -299,12 +299,13 @@ int parseArgument(int argc, int *level, int *param, char **argv, bool *statsFlag
         else
             ERROR("Invalid argument", INVALIG_ARGUMENT);
         if (isNum(argv[2]))
-            *param = strToInt(argv[1]);
+            *param = strToInt(argv[2]);
         else
             ERROR("Invalid argument", INVALIG_ARGUMENT);
         if (argc == 4 && cmpStr(argv[3], "--stats"))
             *statsFlag = true;
-
+        else if(argc == 4 && !cmpStr(argv[3], "--stats"))
+            ERROR("Invalid argument", INVALIG_ARGUMENT);
         return 1;
     }
     else if (argc > 4)
@@ -316,12 +317,12 @@ int parseArgument(int argc, int *level, int *param, char **argv, bool *statsFlag
         ERROR("Not enough arguments", NOT_ENOUGH_ARGS);
     }
 }
-int commands(int argc, char **argv, char *psswd, bool *statsFlag, char *charCount, int *minLength)
+int commands(int argc, char **argv, char *psswd, bool *statsFlag, int *charCount, int *minLength)
 {
     int level = 1;
     int param = 1;
 
-    if (parseArgument(argc, &level, &param, argv, statsFlag)==1)
+    if (parseArgument(argc, &level, &param, argv, statsFlag) == 1)
     {
         if (level > 0 && level < 5 && param > 0)
         {
@@ -361,7 +362,7 @@ int commands(int argc, char **argv, char *psswd, bool *statsFlag, char *charCoun
 int main(int argc, char **argv)
 {
     char psswd[LENGTH];
-    char charCount[NUMBER_OF_POSSIBLE_CHARS] = {'\0'};
+    int charCount[NUMBER_OF_POSSIBLE_CHARS] = {0};
 
     bool statsFlag = false;
     int numberOfPasswords = 0;
@@ -375,16 +376,16 @@ int main(int argc, char **argv)
         {
             printf("%s", psswd);
         }
-        else if(printPass > 1)
+        else if (printPass > 1)
             return commands(argc, argv, psswd, &statsFlag, charCount, &minLength);
         clean(psswd);
     }
     if (statsFlag)
     {
-        printf("\nStatistika:\n");
-        printf("Pocet roznych znakov:\t%d\n", uniqueCount(charCount));
-        printf("Minimalna dlzka:\t\t%d\n", minLength);
-        printf("Priemerna dlzka:\t\t%.1f", (charSum(charCount) / numberOfPasswords));
+        printf("Statistika:\n");
+        printf("Ruznych znaku: %d\n", uniqueCount(charCount));
+        printf("Minimalni delka: %d\n", minLength);
+        printf("Prumerna delka: %.1f", (charSum(charCount) / numberOfPasswords));
     }
     return 0;
 }
