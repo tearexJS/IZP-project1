@@ -10,6 +10,7 @@
 #define TOO_MANY_ARGS 4
 #define TOO_MANY_CHARS 5
 
+
 #define ERROR(msg, errCode)       \
     {                             \
         do                        \
@@ -90,6 +91,7 @@ int strToInt(char *str)
     return -1;
 }
 //sets all the elemnts of the string with '\0' thus clearing it's contents
+
 void clean(char *str)
 {
     for (int i = 0; str[i] != '\0'; i++)
@@ -97,7 +99,9 @@ void clean(char *str)
         str[i] = '\0';
     }
 }
+
 //copies len bytes of source to destination
+
 void strNcpy(char *src, char *dest, int len)
 {
     int i = 0;
@@ -111,12 +115,14 @@ void strNcpy(char *src, char *dest, int len)
 int length(char *str)
 {
     int i = 0;
+
     while (str[i] != '\0')
     {
         i++;
     }
     return i;
 }
+
 // compares the length of the password with the previous password length 
 // keeps the smaller length
 void shortestStr(char *psswd, int *minLength)
@@ -229,6 +235,7 @@ int lvl2(char *psswd, int param)
 
 int lvl3(char *psswd, int param)
 {
+
     if (lvl2(psswd, param) == 1)
     {
         int len = length(psswd);
@@ -400,6 +407,7 @@ int commands(int argc, char **argv, char *psswd, bool *statsFlag, int *charCount
             ERROR("Invalid argument", INVALIG_ARGUMENT);
             break;
         }
+
     }
     else
         return parseArgument(argc, &level, &param, argv, statsFlag);
@@ -444,4 +452,5 @@ int main(int argc, char **argv)
         printf("Prumerna delka: %.1f", (charSum(charCount) / numberOfPasswords));
     }
     return 0;
+
 }
