@@ -19,18 +19,20 @@
         } while (0);              \
     }
 
-// finding out if a string contains a character
+// checking if the password is longer than MAX_STRING_LENGTH characters
+// if the password is not longer than MAX_STRING_LENGTH characters the function returns true otherwise false
 bool isTooLong(char *psswd)
 {
     for (int i = 0; psswd[i] != '\n'; i++)
     {
-        if (i >= 100)
+        if (i >= (MAX_STRING_LENGTH-2))
         {
             return true;
         }
     }
     return false;
 }
+// checking if the string contains only numbers, returns false if it contains something else than numbers otherwise true
 bool isNum(char *str)
 {
     for (int i = 0; str[i] != '\0'; i++)
@@ -40,15 +42,7 @@ bool isNum(char *str)
     }
     return true;
 }
-bool isAlpha(char *str)
-{
-    for (int i = 0; str[i] != '\0'; i++)
-    {
-        if ((str[i] < 'A' || str[i] > 'Z') && (str[i] < 'a' || str[i] > 'z'))
-            return false;
-    }
-    return true;
-}
+// returns true if the string contains a specified character otherwise false
 bool containsChar(char *str, char c)
 {
     for (int i = 0; str[i] != '\0'; i++)
@@ -58,6 +52,8 @@ bool containsChar(char *str, char c)
     }
     return false;
 }
+// sums the number of characters from the array which contains the number of each character present in the passwords
+// returns the number of characters
 float charSum(int *charCount)
 {
     float sum = 0;
@@ -69,6 +65,8 @@ float charSum(int *charCount)
     }
     return sum;
 }
+// counts every element of int array which are bigger than 0, the array contains the number of each character present in the passwords
+// returns the count
 int uniqueCount(int *charCount)
 {
     int uniqueCounter = 0;
@@ -79,6 +77,8 @@ int uniqueCount(int *charCount)
     }
     return uniqueCounter;
 }
+// converts the string to int
+// returns the number if the string does not start with a number it returns -1
 int strToInt(char *str)
 {
     char *endptr;
@@ -89,7 +89,7 @@ int strToInt(char *str)
     }
     return -1;
 }
-
+//sets all the elemnts of the string with '\0' thus clearing it's contents
 void clean(char *str)
 {
     for (int i = 0; str[i] != '\0'; i++)
@@ -97,7 +97,7 @@ void clean(char *str)
         str[i] = '\0';
     }
 }
-
+//copies len bytes of source to destination
 void strNcpy(char *src, char *dest, int len)
 {
     int i = 0;
@@ -117,6 +117,8 @@ int length(char *str)
     }
     return i;
 }
+// compares the length of the password with the previous password length 
+// keeps the smaller length
 void shortestStr(char *psswd, int *minLength)
 {
     int len = containsChar(psswd, '\n') ? length(psswd) - 1 : length(psswd);
@@ -126,6 +128,7 @@ void shortestStr(char *psswd, int *minLength)
         *minLength = len;
     }
 }
+// if a string contais a len sequence of character c returns true, otherwise false
 bool containsSequenceOfChars(char *str, char c, int len)
 {
     int occurences = 0;
@@ -140,6 +143,7 @@ bool containsSequenceOfChars(char *str, char c, int len)
 }
 
 // comparing 2 strings if they are indetical
+// if one not matching character is found or the lengths are not equal returns false, otherwise true
 bool cmpStr(char *str1, char *str2)
 {
     int str1Len = length(str1);
@@ -159,6 +163,7 @@ bool cmpStr(char *str1, char *str2)
     return false;
 }
 // checking if the password contains 1 uppercase and 1 lowercase character
+// returns 1 if the password contains both uppercase and lowercase character, otherwise 0
 int lvl1(char *psswd)
 {
     int len = length(psswd);
@@ -180,6 +185,7 @@ int lvl1(char *psswd)
     }
     return 0;
 }
+//sums the contents of bool array and returns the sum
 int ruleSum(bool *rules)
 {
     int sum = 0;
@@ -190,11 +196,14 @@ int ruleSum(bool *rules)
     return sum;
 }
 // checking if the password matches the number of rules defined by the variable param
+// returns 1 if the matched number of rules is greater than or equal to param, otherwise 0
 int lvl2(char *psswd, int param)
 {
     bool rules[4] = {false};
 
     int len = length(psswd);
+
+    param = (param > 4) ? 4 : param;
 
     if (lvl1(psswd))
     {
@@ -217,6 +226,7 @@ int lvl2(char *psswd, int param)
     return 0;
 }
 // checking if the password does not contain a sequence of matching characters
+
 int lvl3(char *psswd, int param)
 {
     if (lvl2(psswd, param) == 1)
@@ -234,7 +244,8 @@ int lvl3(char *psswd, int param)
     }
     return 0;
 }
-
+// checking if the password does not contain a substring of specified length or longer
+// returns 1 if does not contain a substring of specified length, otherwise 0 
 int lvl4(char *psswd, int param)
 {
     int len = length(psswd);
@@ -263,7 +274,7 @@ int lvl4(char *psswd, int param)
     }
     return 0;
 }
-
+// counts the number of occurences of each character
 void charCounter(char *psswd, int *charCount)
 {
     int len = containsChar(psswd, '\n') ? length(psswd) - 1 : length(psswd);
@@ -273,6 +284,8 @@ void charCounter(char *psswd, int *charCount)
         charCount[psswd[i] - 32]++;
     }
 }
+// parsing the input argument
+// returns the values of level and param or an error code if an unexpected input occures
 int parseArgument(int argc, int *level, int *param, char **argv, bool *statsFlag)
 {
 
@@ -351,6 +364,8 @@ int parseArgument(int argc, int *level, int *param, char **argv, bool *statsFlag
         ERROR("Not enough arguments", NOT_ENOUGH_ARGS);
     }
 }
+// calls the functions responsible for checking the security levels specified by the variable level
+// return what the previous functions return or an error code if an unexpected input occures
 int commands(int argc, char **argv, char *psswd, bool *statsFlag, int *charCount, int *minLength)
 {
     int level = 1;
@@ -358,34 +373,33 @@ int commands(int argc, char **argv, char *psswd, bool *statsFlag, int *charCount
 
     if (parseArgument(argc, &level, &param, argv, statsFlag) == 1)
     {
-        if (level > 0 && level < 5 && param > 0)
-        {
-            if (*statsFlag)
-            {
-                shortestStr(psswd, minLength);
-                charCounter(psswd, charCount);
-            }
-            if (level == 1)
-            {
-                return lvl1(psswd);
-            }
-
-            else if (level == 2)
-            {
-                return lvl2(psswd, param);
-            }
-
-            else if (level == 3)
-            {
-                return lvl3(psswd, param);
-            }
-            else if (level == 4)
-            {
-                return lvl4(psswd, param);
-            }
-        }
-        else
+        if (param <= 0)
             ERROR("Invalid argument", INVALIG_ARGUMENT);
+
+        if (*statsFlag)
+        {
+            shortestStr(psswd, minLength);
+            charCounter(psswd, charCount);
+        }
+        switch (level)
+        {
+        case 1:
+            return lvl1(psswd);
+            break;
+
+        case 2:
+            return lvl2(psswd, param);
+            break;
+        case 3:
+            return lvl3(psswd, param);
+            break;
+        case 4:
+            return lvl4(psswd, param);
+            break;
+        default:
+            ERROR("Invalid argument", INVALIG_ARGUMENT);
+            break;
+        }
     }
     else
         return parseArgument(argc, &level, &param, argv, statsFlag);
@@ -395,17 +409,17 @@ int commands(int argc, char **argv, char *psswd, bool *statsFlag, int *charCount
 
 int main(int argc, char **argv)
 {
-    char psswd[MAX_STRING_LENGTH];
-    int charCount[NUMBER_OF_POSSIBLE_CHARS] = {0};
+    char psswd[MAX_STRING_LENGTH]; //stores the password
+    int charCount[NUMBER_OF_POSSIBLE_CHARS] = {0}; // array to count the occurence of each character
 
-    bool statsFlag = false;
-    int numberOfPasswords = 0;
-    int minLength = MAX_STRING_LENGTH;
+    bool statsFlag = false; // variable for the stats flag
+    int numberOfPasswords = 0; // variable to count the number of passwords
+    int minLength = MAX_STRING_LENGTH; // variable to store the minimum length
 
     while (fgets(psswd, MAX_STRING_LENGTH, stdin))
     {
         numberOfPasswords++;
-        if(isTooLong(psswd))
+        if (isTooLong(psswd))
         {
             ERROR("The input is too long", TOO_MANY_CHARS);
         }
